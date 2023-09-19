@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js"; // routes=> auth.js
 
 dotenv.config();
 
@@ -38,7 +39,9 @@ const connectDB = async () => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+app.use('/api/v1/auth', authRoutes); // application to use authroutes for any incoming http request to domain/api/v1/auth/ register or login
 
+// listen to port
 app.listen(port, () => {
     connectDB();
     console.log("Server is running on port: " + port);
