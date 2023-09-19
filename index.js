@@ -19,13 +19,28 @@ app.get("/", (req, res) => {
     res.send("Api is working perfectly");
 });
 
-// all put request here
-// all post request here
-// all delete request here
-// all patch request here
-// all delete request here
+// connect to mongodb
+mongoose.set('strictQuery', false)
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+    })
+        console.log("MongoDB connected successfully");
+    } catch (err) {
+        console.log(err);
+        console.log("something went wrong while connecting to mongodb");
+    }
+};
 
+// middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors(corsOptions));
 
 app.listen(port, () => {
+    connectDB();
     console.log("Server is running on port: " + port);
 });
+
