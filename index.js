@@ -3,7 +3,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js"; // routes=> auth.js
+import authRoute from "./routes/auth.js"; // routes=> auth.js
+import userRoute from "./routes/user.js"; // routes=> user.js
 
 dotenv.config();
 
@@ -39,7 +40,8 @@ const connectDB = async () => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
-app.use('/api/v1/auth', authRoutes); // application to use authroutes for any incoming http request to domain/api/v1/auth/ register or login
+app.use('/api/v1/auth', authRoute); // application to use authRoute for any incoming http request to domain/api/v1/auth/ register or login
+app.use('/api/v1/users', userRoute); // application to use userRoute for any incoming http request to domain/api/v1/user/ get, update, delete, get single user
 
 // listen to port
 app.listen(port, () => {
