@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoute from "./routes/auth.js"; // routes=> auth.js
 import userRoute from "./routes/user.js"; // routes=> user.js
+import doctorRoute from "./routes/doctor.js"; // routes=> doctor.js
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use('/api/v1/auth', authRoute); // application to use authRoute for any incoming http request to domain/api/v1/auth/ register or login
 app.use('/api/v1/users', userRoute); // application to use userRoute for any incoming http request to domain/api/v1/user/ get, update, delete, get single user
+app.use('/api/v1/doctors', doctorRoute); // application to use doctorRoute for any incoming http request to domain/api/v1/doctor/ get, update, delete, get single doctor
 
 // listen to port
 app.listen(port, () => {
