@@ -7,7 +7,7 @@ export const authenticate = async (req, res, next) => {
     // get token from headers
     const authToken = req.headers.authorization;
 
-    // check if token is available
+    // check if token is exist
     if (!authToken || !authToken.startsWith('Bearer')) {
         return res
         .status(401)
@@ -20,10 +20,10 @@ export const authenticate = async (req, res, next) => {
     try {
         const token = authToken.split(' ')[1];
         // verify token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        req.userId = decodedToken.id;
-        req.role = decodedToken.role;
+        req.userId = decoded.id;
+        req.role = decoded.role;
 
         next(); // must call next() to pass the request to next middleware
     } catch (err) {
@@ -36,7 +36,6 @@ export const authenticate = async (req, res, next) => {
         }
         return res.status(401).json({
             success: false,
-
             message: "Token is not valid"
         });
     } 
@@ -62,5 +61,5 @@ export const restrict = roles=> async (req, res, next) => {
             message: "You are not authorized to access this route"
         });
     }
-    next();
+    next()
 }
