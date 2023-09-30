@@ -8,6 +8,7 @@ import userRoute from "./routes/user.js"; // routes=> user.js
 import doctorRoute from "./routes/doctor.js"; // routes=> doctor.js
 import reviewRoute from "./routes/review.js"; // routes=> review.js
 import bookingRoute from "./routes/booking.js"; // routes=> booking.js
+import { MongoClient } from "mongodb";
 
 dotenv.config();
 
@@ -20,18 +21,22 @@ const corsOptions = {
 
 // all get requests here
 
+
+const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+const reserved = client.db('test').collection('reserved');
 app.get("/", (req, res) => {
     res.send("Api is working perfectly");
 });
 
+
 // connect to mongodb
-mongoose.set('strictQuery', false)
+mongoose.set('strictQuery', false);
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-    })
+        });
         console.log("MongoDB connected successfully");
     } catch (err) {
         console.log(err);
@@ -50,7 +55,9 @@ app.use('/api/v1/reviews', reviewRoute); // application to use reviewRoute for a
 // Use the booking routes
 app.use("/api/v1/booking", bookingRoute); //confused konta hbe route!!
 
-
+app.get('/reserverd', async (req, res) => {
+    res.send(await reserved.find().toArray());
+});
 // listen to port
 app.listen(port, () => {
     connectDB();
