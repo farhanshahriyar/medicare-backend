@@ -7,6 +7,7 @@ import authRoute from "./routes/auth.js"; // routes=> auth.js
 import userRoute from "./routes/user.js"; // routes=> user.js
 import doctorRoute from "./routes/doctor.js"; // routes=> doctor.js
 import reviewRoute from "./routes/review.js"; // routes=> review.js
+import bookingRoute from "./routes/booking.js"; // routes=> booking.js
 
 dotenv.config();
 
@@ -46,6 +47,9 @@ app.use('/api/v1/auth', authRoute); // application to use authRoute for any inco
 app.use('/api/v1/users', userRoute); // application to use userRoute for any incoming http request to domain/api/v1/user/ get, update, delete, get single user
 app.use('/api/v1/doctors', doctorRoute); // application to use doctorRoute for any incoming http request to domain/api/v1/doctor/ get, update, delete, get single doctor
 app.use('/api/v1/reviews', reviewRoute); // application to use reviewRoute for any incoming http request to domain/api/v1/review/ get, update, delete, get single review
+// Use the booking routes
+app.use("/api/v1/booking", bookingRoute); //confused konta hbe route!!
+
 
 // listen to port
 app.listen(port, () => {
