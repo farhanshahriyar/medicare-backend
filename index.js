@@ -10,6 +10,9 @@ import reviewRoute from "./routes/review.js"; // routes=> review.js
 import bookingRoute from "./routes/booking.js"; // routes=> booking.js
 import { MongoClient } from "mongodb";
 
+
+const timeSlotsArray = ['9.00am', '10.00am', '11.00am', '12.00pm', '1.00pm', '2.00pm', '3.00pm', '4.00pm', '5.00pm', '6.00pm', '7.00pm', '8.00pm'];
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +27,8 @@ const corsOptions = {
 
 const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 const reserved = client.db('test').collection('reserved');
+const appointment = client.db('test').collection('appointment');
+const feedback = client.db('test').collection('feedback');
 app.get("/", (req, res) => {
     res.send("Api is working perfectly");
 });
@@ -57,6 +62,105 @@ app.use("/api/v1/booking", bookingRoute); //confused konta hbe route!!
 
 app.get('/reserverd', async (req, res) => {
     res.send(await reserved.find().toArray());
+});
+app.post('/timeslot', async (req, res) => {
+    console.log(req.body);
+    const dates = (await appointment.find({ date: req.body.date, name: req.body.name }).toArray()).map(i => i.time);
+
+    return res.send({ data: timeSlotsArray.filter(i => !dates.includes(i)) });
+});
+app.post('/make-appointment', async (req, res) => {
+    try {
+        const result = await appointment.insertOne(req.body);
+        if (result.acknowledged) {
+            return res.send({
+                success: true,
+                messase: "Appointment done successfully",
+            });
+        } else {
+            return res.status(500).json(
+                {
+                    success: false,
+                    messase: "Internal server error, try again later",
+                }
+            );
+        }
+    }
+    catch (err) {
+        res.status(500).json(
+            {
+                success: false,
+                messase: "Internal server error, try again later",
+            }
+        );
+    }
+});
+app.get('/doctor/:name', async (req, res) => {
+    try {
+        const data = await reserved.findOne({ name: req.params.name.split('-').join(' ') });
+
+        return res.send(data);
+    }
+    catch (err) {
+        res.status(500).json(
+            {
+                success: false,
+                messase: "Internal server error, try again later",
+            }
+        );
+    }
+});
+
+app.get('/get-feedback/:name', async (req, res) => {
+    try {
+        const data = await feedback.find({ name: req.params.name }).toArray();
+        return res.send(data);
+    }
+    catch (err) {
+        res.status(500).json(
+            {
+                success: false,
+                messase: "Internal server error, try again later",
+            }
+        );
+    }
+});
+app.get('/get-appointment/:email', async (req, res) => {
+    try {
+        const data = await appointment.find({ 'user.email': req.params.email }).toArray();
+        return res.send(data);
+    }
+    catch (err) {
+        res.status(500).json(
+            {
+                success: false,
+                messase: "Internal server error, try again later",
+            }
+        );
+    }
+});
+app.post('/add-review', async (req, res) => {
+    try {
+        const data = await feedback.insertOne(req.body);
+        if (data.acknowledged) {
+            return res.send(data);
+        } else {
+            res.status(500).json(
+                {
+                    success: false,
+                    messase: "Internal server error, try again later",
+                }
+            );
+        }
+    }
+    catch (err) {
+        res.status(500).json(
+            {
+                success: false,
+                messase: "Internal server error, try again later",
+            }
+        );
+    }
 });
 // listen to port
 app.listen(port, () => {
